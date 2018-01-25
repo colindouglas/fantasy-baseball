@@ -111,6 +111,7 @@ while (teams_trimmed > 0) {
     arrange(desc(WAR))
   
   ### Try to predict the WAR value of each draft slot. Wiggle is the width of the rolling average
+
   draft_wiggle <- 3
   slot_values <- draftable_players %>%
     mutate(pick = row_number(), 
@@ -165,8 +166,6 @@ team_summary <- keepers_max %>%
               summarize(keepers_adj = n(), WAR_adj = sum(WAR), salary_adj = sum(salary)*10^5), 
             by = "fantasy_team"
   )
-
-
 
 write_csv(keepers_adj, "data/DFL_keepers_opt.csv")
 write_csv(team_summary, "data/DFL_keepers_summary.csv")

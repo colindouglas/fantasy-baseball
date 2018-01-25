@@ -1,0 +1,216 @@
+player_key,player_id,name,fantasy_team,Team,WAR,playerid,year,salary
+370.p.9015,9015,Salvador Perez,1,Royals,2.9,7304,2017,42
+370.p.8949,8949,DJ LeMahieu,1,Rockies,1.8,9874,2017,48
+370.p.9111,9111,Manny Machado,1,Orioles,6.2,11493,2017,115
+370.p.9557,9557,Javier Baez,1,Cubs,2,12979,2017,6.09
+370.p.9174,9174,Brian Dozier,1,Twins,3.7,9810,2017,60
+370.p.8824,8824,Mark Trumbo,1,Orioles,0.5,6876,2017,115
+370.p.9341,9341,Yasiel Puig,1,Dodgers,3.1,14225,2017,82.14285
+370.p.9630,9630,Joey Gallo,1,Rangers,2.3,14128,2017,5.3712
+370.p.9571,9571,Trevor Story,1,Rockies,1.8,12564,2017,5.4
+370.p.9414,9414,Joc Pederson,1,Dodgers,1.9,11899,2017,5.55
+370.p.6039,6039,Adrian Beltre,1,Rangers,3.5,639,2017,180
+370.p.9610,9610,JP Crawford,1,Phillies,0.9,15491,NA,5.35
+370.p.9637,9637,Marcus Stroman,1,Blue Jays,3.8,13431,2017,34
+370.p.9636,9636,Daniel Norris,1,Tigers,1.5,13475,2017,5.455
+370.p.9821,9821,Kendall Graveman,1,Athletics,1.4,15514,2017,5.45
+370.p.9872,9872,Jose Berrios,1,Twins,2.1,14168,NA,5.35
+370.p.9882,9882,Aaron Nola,1,Phillies,4,16149,2017,5.44
+370.p.9347,9347,Brandon Maurer,1,Royals,0.1,4878,2017,19
+370.p.8572,8572,Tyler Flowers,2,Braves,1.3,9134,2017,30
+370.p.9045,9045,Martin Maldonado,2,Angels,1.2,6887,2017,17.25
+370.p.10056,10056,Trea Turner,2,Nationals,4.1,16252,2017,5.549
+370.p.8588,8588,Justin Turner,2,Dodgers,4.3,5235,2017,130
+370.p.9584,9584,Corey Seager,2,Dodgers,5.2,13624,2017,5.755
+370.p.10440,10440,Ian Happ,2,Cubs,1.6,17919,NA,5.35
+370.p.10369,10369,Mitch Haniger,2,Mariners,1.6,14274,2017,5.38
+370.p.9747,9747,Adam Duvall,2,Reds,0.7,10950,2017,5.775
+370.p.9142,9142,Marwin Gonzalez,2,Astros,1.2,5497,2017,37.25
+370.p.8653,8653,Justin Smoak,2,Blue Jays,1.8,9054,2017,41.25
+370.p.10477,10477,Derek Fisher,2,Astros,0.7,16192,NA,5.35
+370.p.9906,9906,Odubel Herrera,2,Phillies,2.4,11476,2017,16
+370.p.8575,8575,Michael Brantley,2,Indians,1.4,4106,2017,93.75
+370.p.9701,9701,Jacob deGrom,2,Mets,4.7,10954,2017,40.5
+370.p.9123,9123,Jameson Taillon,2,Pirates,3.7,11674,2017,5.555
+370.p.10105,10105,Kenta Maeda,2,Dodgers,1.7,18498,2017,31.25
+370.p.9642,9642,Masahiro Tanaka,2,Yankees,3.3,15764,2017,220
+370.p.8479,8479,Anthony Swarzak,2,Mets,0.9,7466,2017,9
+370.p.9959,9959,Ryan Tepera,2,Blue Jays,0.3,10291,2017,5.427
+370.p.9039,9039,Brad Peacock,2,Astros,1.2,5401,2017,5.415
+370.p.9653,9653,Tommy Kahnle,2,Yankees,0.7,11384,NA,5.35
+370.p.9415,9415,Alex Wood,2,Dodgers,2.7,13781,2017,28
+370.p.9097,9097,Gary Sanchez,3,Yankees,3.8,11442,2017,5.579
+370.p.10166,10166,Willson Contreras,3,Cubs,2.9,11609,2017,5.545
+370.p.9104,9104,Jonathan Schoop,3,Orioles,2.3,11265,2017,34.75
+370.p.8685,8685,Mike Moustakas,3,NA,2.6,4892,2017,87
+370.p.10713,10713,Paul DeJong,3,Cardinals,2.4,18015,NA,5.35
+370.p.10157,10157,Trey Mancini,3,Orioles,1,15149,2017,5.36
+370.p.9507,9507,Jose Ramirez,3,Indians,4.7,13510,2017,9.714
+370.p.9338,9338,Jackie Bradley Jr,3,Red Sox,2.9,12984,2017,36
+370.p.8859,8859,Wil Myers,3,Padres,2,10047,2017,45
+370.p.9573,9573,Carlos Correa,3,Astros,5.8,14162,2017,5.35
+370.p.9572,9572,Devon Travis,3,Blue Jays,1.6,13862,2017,5.452
+370.p.8179,8179,Gio Gonzalez,3,Nationals,2.6,7448,2017,120
+370.p.10148,10148,Blake Snell,3,Rays,2.4,13543,2017,5.45
+370.p.9310,9310,Jake Odorizzi,3,Rays,0.9,6397,2017,41
+370.p.9698,9698,Chase Anderson,3,Brewers,1.7,6895,2017,24.5
+370.p.9063,9063,Dellin Betances,3,Yankees,1.1,6216,2017,30
+370.p.9907,9907,Roberto Osuna,3,Blue Jays,0.9,13764,2017,5.524
+370.p.9934,9934,Felipe Rivero,3,Pirates,1.1,12076,2017,5.645
+370.p.8641,8641,Sean Doolittle,3,Nationals,0.8,1581,2017,26.3
+370.p.9401,9401,Tyler Lyons,3,Cardinals,0.5,11334,2017,5.498
+370.p.8281,8281,Jeff Samardzija,3,Giants,3.5,3254,2017,198
+370.p.8918,8918,Alex Cobb,3,NA,1.7,6562,2017,42
+370.p.9096,9096,Travis d'Arnaud,4,Mets,1.5,7739,2017,18.75
+370.p.9723,9723,Justin Bour,4,Marlins,1.3,9744,2017,5.525
+370.p.8314,8314,Daniel Murphy,4,Nationals,2.7,4316,2017,120
+370.p.8789,8789,Eduardo Nunez,4,NA,1.3,6848,2017,42
+370.p.8200,8200,Jed Lowrie,4,Athletics,1.8,4418,2017,65
+370.p.10298,10298,Whit Merrifield,4,Royals,1.8,11281,NA,5.35
+370.p.9385,9385,Marcell Ozuna,4,Cardinals,3.7,10324,2017,35
+370.p.8634,8634,Giancarlo Stanton,4,Yankees,5.7,4949,2017,145
+370.p.10556,10556,Rhys Hoskins,4,Phillies,3.4,16472,NA,5.35
+370.p.9107,9107,Jedd Gyorko,4,Cardinals,1.8,10816,2017,60
+370.p.8950,8950,Josh Harrison,4,Pirates,1.5,8202,2017,77.5
+370.p.9484,9484,Tanner Roark,4,Nationals,2.1,8753,2017,43.15
+370.p.9255,9255,Dan Straily,4,Marlins,1.6,9460,2017,5.521
+370.p.10261,10261,Joe Biagini,4,Blue Jays,1.5,13194,2017,5.43
+370.p.10509,10509,Walker Buehler,4,Dodgers,1.4,19374,NA,5.35
+370.p.9729,9729,Ken Giles,4,Astros,1.1,12910,2017,5.501
+370.p.8846,8846,Julio Teheran,4,Braves,1.5,6797,2017,64.66666
+370.p.9272,9272,Justin Wilson,4,Cubs,0.8,4301,2017,27
+370.p.9718,9718,JT Realmuto,5,Marlins,2.2,11739,2017,5.625
+370.p.8967,8967,Paul Goldschmidt,5,Diamondbacks,4.5,9218,2017,88.33333
+370.p.8996,8996,Jose Altuve,5,Astros,4.4,5417,2017,46.875
+370.p.9201,9201,Andrelton Simmons,5,Angels,3.4,10847,2017,80
+370.p.9438,9438,Corey Dickerson,5,Rays,0.9,10762,2017,30.25
+370.p.9590,9590,Byron Buxton,5,Twins,2.8,14161,2017,5.35
+370.p.9351,9351,Khris Davis,5,Athletics,1.4,9112,2017,50
+370.p.9604,9604,Addison Russell,5,Cubs,3,14106,2017,6.44
+370.p.9609,9609,Maikel Franco,5,Phillies,1.9,12179,2017,5.6
+370.p.8300,8300,Jaime Garcia,5,NA,2.2,8137,2017,120
+370.p.8849,8849,Chris Archer,5,Rays,4.3,6345,2017,49.16667
+370.p.9068,9068,Drew Pomeranz,5,Red Sox,2.1,11426,2017,44.5
+370.p.10070,10070,Zach Davies,5,Brewers,1.8,13183,2017,5.462
+370.p.8728,8728,Ivan Nova,5,Pirates,2.3,1994,2017,76.66667
+370.p.8692,8692,Matt Bush,5,Rangers,0.4,1246,2017,5.4492
+370.p.7964,7964,Joakim Soria,5,White Sox,0.5,6941,2017,80
+370.p.9558,9558,Kris Bryant,6,Cubs,6.2,15429,2017,10.5
+370.p.8863,8863,Dee Gordon,6,Mariners,1.7,8203,2017,77.42202
+370.p.8401,8401,Elvis Andrus,6,Rangers,2.1,8709,2017,153.33333
+370.p.9719,9719,David Peralta,6,Diamondbacks,0.9,2136,2017,5.722
+370.p.9689,9689,Randal Grichuk,6,Blue Jays,1.2,10243,2017,5.572
+370.p.8857,8857,Eric Hosmer,6,NA,2.6,3516,2017,122.5
+370.p.9897,9897,Tim Anderson,6,White Sox,0.8,15172,2017,8.5
+370.p.9355,9355,Ender Inciarte,6,Braves,2.2,4922,2017,27
+370.p.9583,9583,CJ Cron,6,Angels,0.7,12546,2017,5.65
+370.p.9334,9334,Kevin Gausman,6,Orioles,2.4,14107,2017,34.5
+370.p.8061,8061,JA Happ,6,Blue Jays,2.3,7410,2017,130
+370.p.9987,9987,Joe Ross,6,Nationals,0.1,12972,NA,5.35
+370.p.9567,9567,Jon Gray,6,Rockies,3.8,14916,2017,5.4
+370.p.9555,9555,Carl Edwards Jr,6,Cubs,0.6,13607,2017,5.56
+370.p.9149,9149,Dan Otero,6,Indians,0.4,7385,2017,10.55
+370.p.10003,10003,Mychal Givens,6,Orioles,0.6,10430,2017,5.46
+370.p.8099,8099,Ian Kennedy,6,Royals,0.6,6986,2017,135
+370.p.8609,8609,Jonathan Lucroy,7,NA,1.8,7870,2017,52.5
+370.p.8868,8868,Anthony Rizzo,7,Cubs,4.6,3473,2017,72.85714
+370.p.8984,8984,Kyle Seager,7,Mariners,3.6,9785,2017,110
+370.p.9319,9319,Xander Bogaerts,7,Red Sox,3.5,12161,2017,45
+370.p.10235,10235,Rafael Devers,7,Red Sox,2.4,17350,NA,5.35
+370.p.10159,10159,Andrew Benintendi,7,Red Sox,2.9,17901,2017,5.49
+370.p.9118,9118,Starling Marte,7,Pirates,3,9241,2017,53.33333
+370.p.9613,9613,Gregory Polanco,7,Pirates,1.8,12907,2017,16
+370.p.9883,9883,Josh Bell,7,Pirates,1.3,13145,2017,5.49
+370.p.9842,9842,Tommy Pham,7,Cardinals,3,2967,NA,5.35
+370.p.10093,10093,Keon Broxton,7,Brewers,0.1,9253,2017,5.412
+370.p.10621,10621,Vladimir Guerrero Jr,7,Blue Jays,0.1,sa920245,NA,5.35
+370.p.9121,9121,Gerrit Cole,7,Astros,2.6,13125,2017,37.5
+370.p.8590,8590,Madison Bumgarner,7,Giants,3.4,5524,2017,116.66667
+370.p.9317,9317,Hyun-Jin Ryu,7,Dodgers,1.9,14444,2017,78.33333
+370.p.9640,9640,Lucas Giolito,7,White Sox,0.8,15474,NA,5.35
+370.p.9331,9331,James Paxton,7,Mariners,3.8,11828,2017,23.5
+370.p.9413,9413,Alex Colome,7,Rays,0.5,6661,2017,5.479
+370.p.10133,10133,Taylor Rogers,7,Twins,0.4,13449,2017,5.425
+370.p.9542,9542,Archie Bradley,7,Diamondbacks,0.9,12918,2017,5.441
+370.p.8312,8312,Tommy Hunter,7,Phillies,0.7,1157,2017,14
+370.p.8270,8270,Charlie Morton,7,Astros,2.4,4676,2017,70
+370.p.8550,8550,Alex Avila,8,NA,1.3,7476,2017,20
+370.p.8633,8633,Logan Morrison,8,NA,0.9,9205,2017,25
+370.p.9634,9634,Rougned Odor,8,Rangers,1.8,12282,2017,13.33333
+370.p.9105,9105,Nolan Arenado,8,Rockies,4.8,9777,2017,117.5
+370.p.9900,9900,Yoan Moncada,8,White Sox,1.4,17232,NA,5.35
+370.p.9320,9320,Christian Yelich,8,Marlins,4.1,11477,2017,35
+370.p.8861,8861,Mike Trout,8,Angels,8.5,10155,2017,200.83333
+370.p.9325,9325,Aaron Hicks,8,Yankees,2.2,5297,2017,13.5
+370.p.9552,9552,Mookie Betts,8,Red Sox,5.6,13611,2017,9.5
+370.p.9877,9877,Aaron Judge,8,Yankees,3.9,15640,2017,5.445
+370.p.9734,9734,Aaron Altherr,8,Phillies,0.8,11270,2017,5.385
+370.p.9110,9110,Miguel Sano,8,Twins,2.8,12164,2017,5.725
+370.p.8875,8875,Bryce Harper,8,Nationals,5.8,11579,2017,136.25
+370.p.9691,9691,Robbie Ray,8,Diamondbacks,3.6,11486,2017,5.704
+370.p.9176,9176,Jose Quintana,8,Cubs,4.3,11423,2017,70
+370.p.9518,9518,Jimmy Nelson,8,Brewers,1.1,10547,2017,5.47
+370.p.10214,10214,Edwin Diaz,8,Mariners,1,14710,2017,5.45
+370.p.9712,9712,Corey Knebel,8,Brewers,1.1,15010,2017,5.389
+370.p.10029,10029,Zack Godley,8,Diamondbacks,1.9,14862,NA,5.35
+370.p.8932,8932,Danny Duffy,8,Royals,2.1,3542,2017,50
+370.p.10504,10504,Cody Bellinger,9,Dodgers,2.6,15998,NA,5.35
+370.p.9724,9724,Eugenio Suarez,9,Reds,2.4,12552,2017,5.95
+370.p.8628,8628,Zack Cozart,9,Angels,3.2,2616,2017,53.25
+370.p.8772,8772,Mitch Moreland,9,Red Sox,1.1,3086,2017,55
+370.p.8930,8930,Eric Thames,9,Brewers,1.4,3711,2017,40
+370.p.9157,9157,AJ Pollock,9,Diamondbacks,3.2,9256,2017,67.5
+370.p.10000,10000,Nomar Mazara,9,Rangers,2,14553,2017,5.4645
+370.p.9191,9191,Kole Calhoun,9,Angels,2.4,11200,2017,60
+370.p.8795,8795,Brandon Belt,9,Giants,3,10264,2017,40
+370.p.9538,9538,Kevin Kiermaier,9,Rays,3,11038,2017,31.66667
+370.p.8185,8185,Carlos Carrasco,9,Indians,4.2,6632,2017,65
+370.p.9321,9321,Taijuan Walker,9,Diamondbacks,2.3,11836,2017,22.5
+370.p.9823,9823,Carlos Rodon,9,White Sox,1.4,16137,2017,6
+370.p.9456,9456,Danny Salazar,9,Indians,2.3,5867,2017,34
+370.p.9879,9879,Luis Severino,9,Yankees,4.4,15890,2017,5.50975
+370.p.10045,10045,Kyle Barraclough,9,Marlins,0.5,13713,2017,5.365
+370.p.9992,9992,Vince Velasquez,9,Phillies,1.3,11189,2017,5.47
+370.p.9635,9635,Aaron Sanchez,9,Blue Jays,1.6,11490,2017,5.35
+370.p.8172,8172,Johnny Cueto,9,Giants,2.5,6893,2017,235
+370.p.9818,9818,James McCann,10,Tigers,1.8,12859,2017,5.521
+370.p.9781,9781,Jake Lamb,10,Diamondbacks,2.3,13329,2017,5.733
+370.p.9517,9517,Marcus Semien,10,Athletics,1.9,12533,2017,5.45
+370.p.9853,9853,Brandon Drury,10,Diamondbacks,0.5,11615,2017,5.539
+370.p.9339,9339,George Springer,10,Astros,4.6,12856,2017,39
+370.p.9671,9671,Steven Souza Jr,10,Rays,1.3,5667,2017,5.467
+370.p.9116,9116,Francisco Lindor,10,Indians,6,12916,2017,5.793
+370.p.8180,8180,Clayton Kershaw,10,Dodgers,6.3,2036,2017,330
+370.p.8193,8193,Max Scherzer,10,Nationals,5,3137,2017,221.42857
+370.p.10264,10264,Chris Devenski,10,Astros,0.6,12763,2017,5.545
+370.p.9122,9122,Trevor Bauer,10,Indians,2.6,12703,2017,35.5
+370.p.8684,8684,Mike Montgomery,10,Cubs,1.5,4869,2017,5.705
+370.p.9672,9672,Blake Treinen,10,Athletics,0.6,12572,2017,5.637
+370.p.8262,8262,Brad Ziegler,10,Marlins,0.3,7293,2017,70
+370.p.8620,8620,Wilson Ramos,11,Rays,1.7,1433,2017,40
+370.p.9336,9336,Austin Hedges,11,Padres,1.3,12976,2017,5.371
+370.p.10316,10316,Ryan Schimpf,11,Rays,0.3,9953,2017,5.462
+370.p.9106,9106,Anthony Rendon,11,Nationals,4.4,12861,2017,58
+370.p.9446,9446,Brad Miller,11,Rays,0.9,12775,2017,35.75
+370.p.8080,8080,Justin Upton,11,Angels,2.1,5222,2017,221.25
+370.p.8957,8957,Charlie Blackmon,11,Rockies,2.5,7859,2017,73
+370.p.8762,8762,Lorenzo Cain,11,NA,3.3,9077,2017,110
+370.p.9113,9113,Billy Hamilton,11,Reds,1.1,10199,2017,26.25
+370.p.7754,7754,Mike Napoli,11,NA,0.1,3057,NA,5.35
+370.p.9753,9753,Domingo Santana,11,Brewers,1.7,10348,2017,5.422
+370.p.8611,8611,Starlin Castro,11,Marlins,1.2,4579,2017,98.57142
+370.p.10189,10189,Jharel Cotton,11,Athletics,1.2,13654,2017,5.35
+370.p.9459,9459,Sonny Gray,11,Yankees,3,12768,2017,35.75
+370.p.8800,8800,Jeremy Jeffress,11,Brewers,0.3,9490,2017,21
+370.p.9322,9322,Mike Zunino,12,Mariners,2.5,13265,2017,5.7
+370.p.10183,10183,Alex Bregman,12,Astros,3.9,17678,2017,5.394
+370.p.9961,9961,Travis Shaw,12,Brewers,1.7,11982,2017,5.444
+370.p.9281,9281,Avisail Garcia,12,White Sox,1.3,5760,2017,30
+370.p.9771,9771,Chris Taylor,12,Dodgers,2.3,13757,NA,5.35
+370.p.8723,8723,Josh Donaldson,12,Blue Jays,5.9,5038,2017,170
+370.p.9875,9875,Michael Conforto,12,Mets,3.1,16376,2017,5.54904
+370.p.9376,9376,Carlos Martinez,12,Cardinals,4,11682,2017,37
+370.p.8780,8780,Chris Sale,12,Red Sox,5.4,10603,2017,120
+370.p.9095,9095,Yu Darvish,12,NA,3.6,13074,2017,110
+370.p.8562,8562,Stephen Strasburg,12,Nationals,4.5,10131,2017,164.28571
+370.p.9048,9048,Corey Kluber,12,Indians,5.2,2429,2017,77
