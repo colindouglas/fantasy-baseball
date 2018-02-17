@@ -3,6 +3,7 @@ devtools::install_github("ctrombley/httr")
 library(httr)
 library(xml2)
 library(tidyverse)
+library(jsonlite)
 
 keys <- read_csv("../oauth_keys.csv") %>%
   filter(website == "yahoo")
@@ -41,8 +42,8 @@ for (i in 1:12) {
     player_key = unlist(map_if(roster_list$fantasy_content$team[[2]]$roster[[4]]$players, is.list, ~ .$player[[1]][[1]]$player_key)),
     player_id = unlist(map_if(roster_list$fantasy_content$team[[2]]$roster[[4]]$players, is.list, ~ .$player[[1]][[2]]$player_id)),
     name = unlist(map_if(roster_list$fantasy_content$team[[2]]$roster[[4]]$players, is.list, ~ .$player[[1]][[3]]$name$full)),
-    fantasy_team = team_number
-  ) %>% 
+    fantasy_team = team_number) %>% 
+
     # Remove the last row of the df (its junk)
     head(-1) %>% 
     
@@ -57,8 +58,4 @@ for (i in 1:12) {
 path <- paste0("data/DFL_rosters.csv")
 write_csv(fantasy_teams, path)
 
-
-# Gotta figure out some way of getting this vector into the dataframe  
-# positions <- map_if(roster$fantasy_content$team[[2]]$roster[[4]]$players, is.list, ~ .$player[[1]][[13]][[1]]) %>%
-#   map_if(is.list, ~unlist(.)) %>% bind_cols(team, .)
 
