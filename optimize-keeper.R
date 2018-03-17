@@ -13,7 +13,7 @@ get_picks <- function(position, teams, slots) {
 # Constants ---------------------------------------------------------------
 
 league_min <- 535000
-salary_cap <- 75000000
+salary_cap <- 74854590
 team_count <- 12
 roster_size <- 30
 draft_order <- order(c(11, 6, 1, 9, 2, 7, 5, 10, 4, 8, 3, 12)) # T11 picks first, T6 picks second, etc.
@@ -32,11 +32,14 @@ salary_data <- read_csv("data/usatoday_salary.csv") %>%
   mutate(name = iconv(as.character(name), from="UTF-8", to="ASCII//TRANSLIT"))
   
 ### Import the 2018 Steamer Projections
-steamer_proj <- read_csv("data/steamer_2018_batters.csv") %>%
-  select(Name, Team, WAR, playerid) %>%
-  bind_rows(read_csv("data/steamer_2018_pitchers.csv") %>% select(Name, Team, WAR, playerid)) %>%
-  mutate(Name = gsub("\\.","", Name)) %>%
-  mutate(Name = iconv(as.character(Name), from="UTF-8", to="ASCII//TRANSLIT"))
+# steamer_proj <- read_csv("data/steamer_2018_batters.csv") %>%
+#   select(Name, Team, WAR, playerid) %>%
+#   bind_rows(read_csv("data/steamer_2018_pitchers.csv") %>% select(Name, Team, WAR, playerid)) %>%
+#   mutate(Name = gsub("\\.","", Name)) %>%
+#   mutate(Name = iconv(as.character(Name), from="UTF-8", to="ASCII//TRANSLIT"))
+
+steamer_proj <- weightedProj %>%
+  rename(WAR = weightedWAR)
 
 
 # First pass of keeper optimization ---------------------------------------
@@ -114,9 +117,11 @@ while (teams_trimmed > 0) {
 
   draft_wiggle <- 3
   slot_values <- draftable_players %>%
-    mutate(pick = row_number(), 
-           est_WAR = c(zoo::rollmean(x = WAR, draft_wiggle), rep(0, draft_wiggle-1))) %>%
+    mutate(pick = rank(-WAR, ties = "first"), 
+#           est_WAR = zoo::rollmean(x = WAR, k = draft_wiggle, align = "right", fill = 0)) %>%
+           est_WAR = WAR) %>%
     select(pick, WAR, est_WAR)
+  slot_values$pick <- 1:nrow(slot_values)
   
   keepers_adj <- data_frame()
   
@@ -136,7 +141,7 @@ while (teams_trimmed > 0) {
     
     ### Estimate the value of their last pick (very rough)
     last_pick_value <- slot_values %>%
-      filter(row_number() == last_pick) %>%
+      filter(pick == last_pick) %>%
       pull(est_WAR)
     
     ### If the value of their last pick is more than one of their keepers, drop the least valuable keeper
@@ -154,7 +159,7 @@ while (teams_trimmed > 0) {
   }
   keepers_current <- keepers_adj
 }
-rm(keepers_current)
+#rm(keepers_current)
 
 
 ### Make a summary table with revisions
