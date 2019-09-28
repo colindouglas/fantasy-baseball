@@ -25,3 +25,7 @@ vignettes/*.pdf
 .Rproj.user
 *.Rproj
 *.Rdata
+# Script to connect to SQL database
+connect_SQL.R
+# Ignore the data folder
+/data

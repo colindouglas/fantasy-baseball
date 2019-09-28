@@ -4,7 +4,7 @@ library(tidyverse)
 # Constants ---------------------------------------------------------------
 
 # The year for the projections
-year <- 2018
+year <- 2019
 
 # Weights for each projection system, don't need to add up to 1
 weights <- c(
@@ -69,14 +69,11 @@ hypeScore <- weightedProj %>%
 #  mutate(hype = (fan - meanWAR)/meanWAR) %>%
   mutate(hype = (fan - meanWAR)) %>%
   filter(!is.na(hype), is.finite(hype), meanWAR >= 0.5) %>%
-  mutate(hype = (hype - mean(hypeScore$hype))) %>%
   arrange(desc(hype))
+
+hypeScore$zHype <- (hypeScore$hype - mean(hypeScore$hype) ) / sd(hypeScore$hype)
 
 hypeScore %>%
   ggplot(aes(x = meanWAR, y = hype)) +
   geom_point() +
   geom_smooth()
-
-
-
-allProj %>% mutate(weight = weights[system]) %>% filter(Name == "Yoan Moncada")

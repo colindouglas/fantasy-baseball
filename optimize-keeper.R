@@ -12,17 +12,19 @@ get_picks <- function(position, teams, slots) {
 
 # Constants ---------------------------------------------------------------
 
-league_min <- 535000
-salary_cap <- 74854590
+league_min <- 545000
+salary_cap <- 66553041.75 
 team_count <- 12
 roster_size <- 30
-draft_order <- order(c(11, 6, 1, 9, 2, 7, 5, 10, 4, 8, 3, 12)) # T11 picks first, T6 picks second, etc.
+draft_order <- order(c(10, 12, 11, 1, 6, 5, 9, 8, 3, 7, 4, 2)) # First number is team #10, index position is order
+current_year <- 2018
 
 # Read in Data ------------------------------------------------------------
 
 ### Import the USA Today Salary data set 
 salary_data <- read_csv("data/usatoday_salary.csv") %>%
-  filter(year == 2017)  %>%
+  mutate(salary = as.numeric(gsub("[$,.]", "", salary))/100) %>%
+  filter(year == current_year)  %>%
   select(-aav) %>%
   
   ### Remove periods from names
@@ -72,7 +74,7 @@ for (i in 1:team_count) {
       !is.na(WAR) ~ WAR))
   
   ### Use the adagio implimentation of the knapsack problem solution to find optimal keepers
-  keepers <- knapsack(merged_keeper$salary, merged_keeper$WAR, cap = 750) # Satisfy salary cap
+  keepers <- knapsack(merged_keeper$salary, merged_keeper$WAR, cap = salary_cap / 10^5) # Satisfy salary cap
   
   ### Make a data frame of just the players to keep
   best_roster <- merged_keeper %>%
@@ -87,7 +89,7 @@ for (i in 1:team_count) {
 team_summary <- keepers_max %>%
   group_by(fantasy_team) %>%
   summarize(keepers = n(), WAR = sum(WAR), salary = sum(salary)) %>%
-  mutate(picks = 30 - keepers)
+  mutate(picks = roster_size - keepers)
 
 ### Write the data to CSVs
 write_csv(keepers_max, "data/DFL_keepers_max.csv")
@@ -174,3 +176,10 @@ team_summary <- keepers_max %>%
 
 write_csv(keepers_adj, "data/DFL_keepers_opt.csv")
 write_csv(team_summary, "data/DFL_keepers_summary.csv")
+
+keepers_adj %>%
+  group_by(fantasy_team) %>%
+  summarize(WAR = sum(meanWAR)) %>%
+  arrange(desc(WAR))
+
+keepers_adj %>% filter(fantasy_team == 1)

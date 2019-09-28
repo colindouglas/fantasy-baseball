@@ -2,7 +2,7 @@ library(tidyverse)
 library(rvest)
 
 salary_data <- data_frame()
-for (year in 1988:2018) {
+for (year in 1988:2019) {
   url <- paste0("https://www.usatoday.com/sports/mlb/salaries/", year, "/player/all/")
   
   response <- read_html(url)
