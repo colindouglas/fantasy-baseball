@@ -123,6 +123,7 @@ DownloadTeamData <- function(year, team) {
   table_names <- c("comments", "data", "info_long", "plays", "starters", "subs")
   walk(table_names, ~ dbWriteTable(con = rsdb, name = ., value = eval(as.name((.))), append = TRUE)) # Write to DB
   toc()
+  
 }
 
 # This is the code the does all the legwork
