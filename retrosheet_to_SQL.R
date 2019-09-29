@@ -1,19 +1,22 @@
-# Use retrosheet fork that works with zero substitution games
+# Use retrosheet fork that works with no-substitution games
 # devtools::install_github("colindouglas/retrosheet")
-
 library(retrosheet)
 library(tidyverse)
 library(DBI)
 library(odbc)
 library(tictoc)
 
-
-# This sets a connection called 'rsdb' to a Postgres server where the data is stored
+# Sets a connection called 'rsdb' to a Postgres server where the data is stored
 source("connect_SQL.R")
+
+# Function to drop all the tables if you want to restart
+DropAllTables <- function() {
+  table_names <- c("comments", "data", "info_long", "info", "plays", "starters", "subs")
+  walk(table_names, ~ dbRemoveTable(con = rsdb, name = .)) 
+}
 
 # This script downloads gamelog data from Retrosheet and reorganizes into tables that play nice with SQL
 # Most of the work here is just unnesting the game data and organizing it key-wise
-
 DownloadTeamData <- function(year, team) {
   
   #year <- 2018;  team_number <- 2 #debug
@@ -114,16 +117,18 @@ DownloadTeamData <- function(year, team) {
       type_convert(col_types = cols())
   })
   toc()
-  tic("Writing to DB")
+  
+  tic("Writing to database")
   table_names <- c("comments", "data", "info_long", "plays", "starters", "subs")
-  walk(table_names, ~ dbWriteTable(con = rsdb, name = ., value = eval(as.name(.)), append = TRUE)) # Write to DB
+  walk(table_names, ~ dbWriteTable(con = rsdb, name = ., value = eval(as.name((.))), append = TRUE)) # Write to DB
   toc()
+  
 }
 
 # This is the code the does all the legwork
 # For a given year, get all the teams in that year and then download all the team data
 # Walk this over a range of years
-walk(2015:1994, 
+walk(2019:1994, 
      function(year) {
        walk(getTeamIDs(year = year), 
             ~ DownloadTeamData(year, team = .))
@@ -137,9 +142,3 @@ dbGetQuery(rsdb, statement = "select * from info_long") %>%
               names_from = category, 
               values_from = info) %>%
   dbWriteTable(con = rsdb, name = "info", value = ., overwrite = TRUE)
-
-# Function to drop all the tables if you want to restart
-DropAllTables <- function() {
-  table_names <- c("comments", "data", "info_long", "info", "plays", "starters", "subs")
-  walk(table_names, ~ dbRemoveTable(con = rsdb, name = .)) 
-}
