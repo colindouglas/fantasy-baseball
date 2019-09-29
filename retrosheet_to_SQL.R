@@ -1,7 +1,12 @@
+# Use retrosheet fork that works with zero substitution games
+# devtools::install_github("colindouglas/retrosheet")
+
 library(retrosheet)
 library(tidyverse)
 library(DBI)
 library(odbc)
+library(tictoc)
+
 
 # This sets a connection called 'rsdb' to a Postgres server where the data is stored
 source("connect_SQL.R")
@@ -12,11 +17,10 @@ source("connect_SQL.R")
 DownloadTeamData <- function(year, team) {
   
   #year <- 2018;  team_number <- 2 #debug
-  
-  games <- retrosheet::getRetrosheet(type = "play", year = year, team = team, stringsAsFactors = FALSE)
-  
-  #game <- games[[77]] # debug
   message("Year: ", year, " // Team: ", team)
+  games <- getRetrosheet(type = "play", year = year, team = team, stringsAsFactors = FALSE)
+  #game <- games[[77]] # debug
+
   # Table with data about each individual name
   # More details here: https://www.retrosheet.org/eventfile.htm
   # "game_id"    = game identifier in the form of PARKYYYMMDDI (PRIMARY KEY)     
@@ -47,13 +51,16 @@ DownloadTeamData <- function(year, team) {
   # "lp"        = Losing pitcher
   # "save"      = Pitcher awarded the save
   
+  tic("Game info")
   info_long <- map_dfr(games, function(game) {
     as_tibble(game$info) %>%
       mutate(game_id = head(game$id, 1)) %>%
       filter(!is.na(category)) %>%
       mutate(year = year) 
   })
+  toc()
   
+  tic("Starters")
   # The starting players for each game
   starters <-  map_dfr(games, function(game) {
     as_tibble(game$start) %>%
@@ -62,7 +69,9 @@ DownloadTeamData <- function(year, team) {
       select(game_id, everything()) %>%
       type_convert(col_types = cols())
   })
+  toc()
   
+  tic("Play-by-Play")
   # Play-by-play of each game
   # Parsed by event_log_parser.R to a more R-friendly format
   plays <-  map_dfr(games, function(game) {
@@ -71,7 +80,9 @@ DownloadTeamData <- function(year, team) {
       select(game_id, everything()) %>%
       type_convert(col_types = cols())
   })
+  toc()
   
+  tic("Comments")
   # Comments for the game
   # Usually includes  injury information and video challenges
   comments <-  map_dfr(games, function(game) {
@@ -83,14 +94,17 @@ DownloadTeamData <- function(year, team) {
              tail(-1)) %>%
       type_convert(col_types = cols())
   })
+  toc()
   
+  tic("Subs")
   # Substitutions that occur in the game
   subs <-  map_dfr(games, function(game) {
     as_tibble(game$sub) %>%
       filter(!is.na(retroID)) %>%
       type_convert(col_types = cols())
   })
-  
+  toc()
+  tic("Extra data")
   # This is just extra data, probably not useful?
   # "er" fields count the number of earned runs for each player within a game
   data <-  map_dfr(games, function(game) {
@@ -99,16 +113,19 @@ DownloadTeamData <- function(year, team) {
       mutate(game_id = head(game$id, 1)) %>%
       type_convert(col_types = cols())
   })
+  toc()
+  tic("Writing to DB")
   table_names <- c("comments", "data", "info_long", "plays", "starters", "subs")
   walk(table_names, ~ dbWriteTable(con = rsdb, name = ., value = eval(as.name(.)), append = TRUE)) # Write to DB
+  toc()
 }
 
 # This is the code the does all the legwork
 # For a given year, get all the teams in that year and then download all the team data
 # Walk this over a range of years
-walk(2018:1994, 
+walk(2015:1994, 
      function(year) {
-       walk(retrosheet::getTeamIDs(year = year), 
+       walk(getTeamIDs(year = year), 
             ~ DownloadTeamData(year, team = .))
      })
 
@@ -126,4 +143,3 @@ DropAllTables <- function() {
   table_names <- c("comments", "data", "info_long", "info", "plays", "starters", "subs")
   walk(table_names, ~ dbRemoveTable(con = rsdb, name = .)) 
 }
-
