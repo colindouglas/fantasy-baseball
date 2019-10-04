@@ -25,10 +25,7 @@ vignettes/*.pdf
 .Rproj.user
 *.Rproj
 *.Rdata
-.gitignore
 # Script to connect to SQL database
 connect_SQL.R
-# Ignore the data folder
 /data
-# Ignore this troubleshooting file
-troubleshooting.R
+test.R
