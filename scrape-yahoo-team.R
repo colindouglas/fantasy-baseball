@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ### Use the httr bugfix from https://github.com/r-lib/httr/issues/493
 #devtools::install_github("ctrombley/httr")
 library(httr)
@@ -137,6 +136,3 @@ for (i in 1:12) {
 # Save the rosters as CSVs
 path <- paste0("data/DFL_rosters.csv")
 write_csv(fantasy_teams, path)
-
-
->>>>>>> f46006cf36ec1cda500107390ce643f62d8df146
