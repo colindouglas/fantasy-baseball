@@ -1,8 +1,18 @@
-library(retrosheet)
 library(tidyverse)
 
-getRetrosheetYear <- function(p_year) {
-  
+
+# Sets a connection called 'rsdb' to a Postgres server where the data is stored
+source("connect_SQL.R")
+
+# A function where you get a player's history by = c("AB", "game", "season")
+
+# A function where you get a team's stats by = c("game", "season", )
+
+# Get some test data
+query <- "select plays.game_id,\"retroID\",play from plays LEFT JOIN info on plays.game_id = info.game_id where (hometeam='TOR' or visteam='TOR') and year=2017"
+
+plays <- dbGetQuery(rsdb, statement = query)
+
   # Get a list of teams that were active that year
   # TODO: Pull this from SQL instead
   teams <- getTeamIDs(year = p_year)
@@ -27,13 +37,13 @@ getRetrosheetYear <- function(p_year) {
                   `BB` = grepl("^W", play),
                   `SH` = grepl("/SH", play),
                   `SF` = grepl("/SF", play),
-                  INT  = grepl("INT", play),
-                  `E`  = grepl("^E", play),
+                   INT = grepl("INT", play),
+                   `E` = grepl("^E", play),
                   `FC` = grepl("^FC", play),
-                  out = grepl("^[0-9]", play),
-                  HBP = grepl("^HBP", play),
-                  PA = TRUE, 
-                  AB = !BB & !HBP & !SF & !SH & !INT)
+                   out = grepl("^[0-9]", play),
+                   HBP = grepl("^HBP", play),
+                    PA = TRUE, 
+                    AB = !BB & !HBP & !SF & !SH & !INT)
     })
   }) %>% arrange(date)
   
