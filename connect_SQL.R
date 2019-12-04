@@ -1,1 +1,1 @@
-rsdb <- DBI::dbConnect(RSQLite::SQLite(), "data/retrosheet.db")
+rsdb <- DBI::dbConnect(RSQLite::SQLite(), "data/retrosheet/events.db")
