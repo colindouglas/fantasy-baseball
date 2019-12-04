@@ -1,12 +1,12 @@
-# Use retrosheet fork that works with no-substitution games
+# Use retrosheet fork that works with no-substitution games and caching
 # devtools::install_github("colindouglas/retrosheet")
+# devtools::install("~/projects/retrosheet/")
 library(retrosheet)
 library(tidyverse)
 library(DBI)
-library(odbc)
 library(tictoc)
 
-# Sets a connection called 'rsdb' to a Postgres server where the data is stored
+# Sets an SQLite connection called 'rsdb' to local file "data/retrosheet.db"
 source("connect_SQL.R")
 
 # Function to drop all the tables if you want to restart
@@ -20,9 +20,8 @@ DropAllTables <- function() {
 DownloadTeamData <- possibly(
   function(year, team) {
 
-    #year <- 1997;  team <- "BAL" #debug
     message("Year: ", year, " // Team: ", team)
-    games <- getRetrosheet(type = "play", year = year, team = team, stringsAsFactors = FALSE)
+    games <- getRetrosheet(type = "play", year = year, team = team, stringsAsFactors = FALSE) # cache = "data/retrosheet")
     
     # 1999-and-earlier seasons have a copyright notice as the first element of the list
     # The line below removes games where the game_id is NULL to avoid this problem
@@ -63,7 +62,7 @@ DownloadTeamData <- possibly(
     tic("Game info")
     info_long <- map_dfr(games, function(game) {
       as_tibble(game$info) %>%
-        mutate(game_id = head(game$id, 1)) %>%
+        mutate(gameID = head(game$id, 1)) %>%
         filter(!is.na(category)) %>%
         mutate(year = year) 
     })
@@ -74,10 +73,9 @@ DownloadTeamData <- possibly(
     starters <-  map_dfr(games, function(game) {
       as_tibble(game$start) %>%
         filter(!is.na(retroID)) %>%
-        mutate(game_id = head(game$id, 1)) %>%
-        select(game_id, everything()) %>%
-        type_convert(col_types = cols()) %>%
-        rename(retro_id = retroID, bat_pos = batPos, field_pos = fieldPos)
+        mutate(gameID = head(game$id, 1)) %>%
+        select(gameID, everything()) %>%
+        type_convert(col_types = cols()) 
     })
     toc()
     
@@ -86,10 +84,9 @@ DownloadTeamData <- possibly(
     # Parsed by event_log_parser.R to a more R-friendly format
     plays <-  map_dfr(games, function(game) {
       as_tibble(game$play) %>%
-        mutate(game_id = head(game$id, 1)) %>%
-        select(game_id, everything()) %>%
-        type_convert(col_types = cols()) %>%
-        rename(retro_id = retroID)
+        mutate(gameID = head(game$id, 1)) %>%
+        select(gameID, everything()) %>%
+        type_convert(col_types = cols())
     })
     toc()
     
@@ -97,7 +94,7 @@ DownloadTeamData <- possibly(
     # Comments for the game
     # Usually includes  injury information and video challenges
     comments <-  map_dfr(games, function(game) {
-      tibble(game_id = head(game$id, 1), 
+      tibble(gameID = head(game$id, 1), 
              comments = game$com %>% 
                paste(collapse = "") %>% 
                str_split(pattern = "\\$") %>% 
@@ -109,16 +106,15 @@ DownloadTeamData <- possibly(
     
     tic("Subs")
     # Substitutions that occur in the game
-    subs <-  map_dfr(games, function(game) {
-      if (NCOL(game$sub) > 5) { 
+    subs <- map_dfr(games, function(game) {
+      if (NCOL(game$sub) >= 5) { 
         as_tibble(game$sub) %>%
-          mutate(game_id = head(game$id, 1),
+          mutate(gameID = head(game$id, 1),
                  # The line below is here because PIT200206180 has a team listed as 1X and it messes up the typing. 
                  # Not sure why? Maybe pinch runner?
                  team = gsub("[a-zA-Z]", "", team)) %>%
           filter(!is.na(retroID)) %>%
-          type_convert(col_types = cols()) %>%
-          rename(retro_id = retroID, bat_pos = batPos, field_pos = fieldPos)
+          type_convert(col_types = cols())
       } else {
         return(NULL)
       }
@@ -133,15 +129,17 @@ DownloadTeamData <- possibly(
     data <-  map_dfr(games, function(game) {
       as_tibble(game$data) %>%
         filter(!is.na(projCode)) %>%
-        mutate(game_id = head(game$id, 1)) %>%
-        type_convert(col_types = cols()) %>%
-        mutate(proj_code = projCode, retro_id = retroID, er = ER)
+        mutate(gameID = head(game$id, 1)) %>%
+        type_convert(col_types = cols())
     })
     toc()
     
     tic("Writing to database")
-    table_names <- c("comments", "data", "info_long", "plays", "starters", "subs")
+    table_names <- c("comments", "data", "info_long", "plays", "starters")
     walk(table_names, ~ dbWriteTable(con = rsdb, name = ., value = eval(as.name((.))), append = TRUE)) # Write to DB
+    if (length(subs) > 0) {
+      dbWriteTable(con = rsdb, name = "subs", value = subs, append = TRUE)
+    }
     toc()
     
     return(tibble(year, team))
@@ -152,8 +150,8 @@ DownloadTeamData <- possibly(
 # This is the code the does all the legwork
 # For a given year, get all the teams in that year and then download all the team data
 # Walk this over a range of years
-years <- 2018:1994
-sucessful_seasons <- map_dfr(years,
+years <- 2018:2018 # Low end: 1919
+successful_seasons <- map_dfr(years,
      function(year) {
        map_dfr(
          getTeamIDs(year = year), 
@@ -165,11 +163,12 @@ sucessful_seasons <- map_dfr(years,
 # But coverting it wide allows for easier joining
 tic("Info long to wide")
 dbGetQuery(rsdb, statement = "select * from info_long") %>%
-  pivot_wider(id_cols = c("game_id", "year"),
+  pivot_wider(id_cols = c("gameID", "year"),
               names_from = category,
               values_from = info) %>%
   dbWriteTable(con = rsdb, name = "info", value = ., overwrite = TRUE)
 toc()
 
+# Logging for troubleshooting
 all_seasons <- map_dfr(years, ~ tibble(year = ., team = getTeamIDs(year = .) ))
 failed_seasons <- write_csv(anti_join(all_seasons, successful_seasons), path = "logs/RS_to_SQL - failed_seasons.csv")

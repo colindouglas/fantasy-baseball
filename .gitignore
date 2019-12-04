@@ -26,6 +26,6 @@ vignettes/*.pdf
 *.Rproj
 *.Rdata
 # Script to connect to SQL database
-connect_SQL.R
-/data
+data
 test.R
+logs
