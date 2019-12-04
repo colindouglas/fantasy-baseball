@@ -22,7 +22,7 @@ DownloadTeamData <- possibly(
 
     message("Year: ", year, " // Team: ", team)
     games <- getRetrosheet(type = "play", year = year, team = team, stringsAsFactors = FALSE, cache = "data/retrosheet")
-    
+
     # 1999-and-earlier seasons have a copyright notice as the first element of the list
     # The line below removes games where the game_id is NULL to avoid this problem
     games <- games[unlist(map(games, ~ !is.null(.$id)))] 
@@ -151,6 +151,7 @@ DownloadTeamData <- possibly(
 # For a given year, get all the teams in that year and then download all the team data
 # Walk this over a range of years
 years <- 2018:1919 # Low end: 1919
+
 successful_seasons <- map_dfr(years,
      function(year) {
        map_dfr(
