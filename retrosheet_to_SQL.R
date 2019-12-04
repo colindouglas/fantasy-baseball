@@ -160,14 +160,25 @@ successful_seasons <- map_dfr(years,
      })
 
 # Converts the info_long table to a wide table
-# Compiling it long allows for greater flexibility
+# Reshaping it long allows for greater flexibility
 # But coverting it wide allows for easier joining
 tic("Info long to wide")
-dbGetQuery(rsdb, statement = "select * from info_long") %>%
-  pivot_wider(id_cols = c("gameID", "year"),
-              names_from = category,
-              values_from = info) %>%
-  dbWriteTable(con = rsdb, name = "info", value = ., overwrite = TRUE)
+info_long <- dbReadTable(rsdb, name = "info_long") 
+
+# Certain categories have more than one value (for some reason)
+# This collapses them into comma separated values in a single cell
+collapse_list <- function(x) paste(unlist(x), collapse = ", ")
+
+info <- info_long %>% 
+  distinct() %>% # Just in case I accidentally processed a game twice
+  pivot_wider(
+    id_cols = c("gameID", "year"),
+    names_from = category,
+    values_from = info,
+    values_fn = list(info = collapse_list)
+  )
+
+dbWriteTable(con = rsdb, name = "info", value = info, overwrite = TRUE)
 toc()
 
 # Logging for troubleshooting
