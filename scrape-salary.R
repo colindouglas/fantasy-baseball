@@ -1,8 +1,8 @@
 library(tidyverse)
 library(rvest)
 
-salary_data <- data_frame()
-for (year in 1988:2019) {
+salary_data <- tibble()
+for (year in 2019:2019) {
   url <- paste0("https://www.usatoday.com/sports/mlb/salaries/", year, "/player/all/")
   
   response <- read_html(url)
@@ -31,7 +31,7 @@ for (year in 1988:2019) {
     as.numeric()
   
   salary_data <- salary_data %>%
-    bind_rows(data_frame(name = name, year = year, salary = salary, aav = aav))
+    bind_rows(tibble(name = name, year = year, salary = salary, aav = aav))
 }
 
 write_csv(salary_data, "data/usatoday_salary.csv")
