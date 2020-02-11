@@ -8,7 +8,6 @@ get_picks <- function(position, teams, slots) {
   return(seq(from = position, by = teams, length.out = slots))
 }
 
-
 # Constants ---------------------------------------------------------------
 
 league_min <- 555000

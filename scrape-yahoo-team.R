@@ -6,8 +6,19 @@ library(tidyverse)
 library(jsonlite)
 
 
-# Authorize with Yahoo Fantasy API ----------------------------------------
+# Constants ---------------------------------------------------------------
+year <- 2019 # Download data for what year?
+league_minimum <- 555000 # League minimum salary for {year}
 
+# Function to construct a Yahoo Fantasy API call
+yahoo_api <- function(...) {
+  url <- paste0(c(...), collapse = "")
+  content(GET(url, 
+              user_agent(userAgent),
+              add_headers(Authorization = paste0("Bearer ", token$access_token))
+  ))}
+
+# Authorize with Yahoo Fantasy API ----------------------------------------
 keys <- read_csv("../oauth_keys.csv") %>%
   filter(website == "yahoo_old")
 
@@ -43,69 +54,70 @@ game_ids <- content(GET(
   add_headers(Authorization = paste0("Bearer ", token$access_token)))) 
 
 # Game ID dot "l" dot league ID
-#leagueID <- "378.l.21228" # DFL 2018
-leagueID <- "388.l.18437" # DFL 2019
-#leagueID <- "398.l.35309" # DFL 2020
-
-
-# Get the rosters for each time all crafty, using purrr -------------------
-
-# Construct the Yahoo API call to get the team roster
-team_rosters <- map(1:12, function(team_number) {
-  Sys.sleep(2) # Wait two seconds so the API doesn't get mad
-  
-  # Make the URL for the API request
-  url <- paste0("https://fantasysports.yahooapis.com/fantasy/v2/team/", leagueID, ".t.", team_number, "/roster?format=json")
-  
-  # Return the content from the API request
-  content(GET(url, 
-              user_agent(userAgent),
-              add_headers(Authorization = paste0("Bearer ", token$access_token)))
-  )}
+leagueIDs <- c(
+  "2018" = "378.l.21228", # DFL 2018
+  "2019" = "388.l.18437", # DFL 2019
+  "2020" = "398.l.35309"  # DFL 2020
 )
 
+leagueID <- leagueIDs[[as.character(year)]]
 
-# Get the rosters for each team -------------------------------------------
+# Get the rosters for each team in the league -----------------------------
 
-fantasy_teams <- tibble()
-for (i in 1:12) {
-  ### Wait two seconds so the API doesn't get mad
-  Sys.sleep(2)
+# Get the league info
+league_info <- yahoo_api("https://fantasysports.yahooapis.com/fantasy/v2/league/", leagueID, "?format=json")$fantasy_content$league[[1]]
+
+# Get the team roster info for each team in the league from Yahoo
+team_rosters <- map(1:league_info$num_teams, function(team_number) {
   
-  team_number <- i
+  Sys.sleep(2) # Wait two seconds so the API doesn't get mad
+  yahoo_api("https://fantasysports.yahooapis.com/fantasy/v2/team/", leagueID, ".t.", team_number, "/roster?format=json")
+  }
+)
 
-  # Construct the Yahoo API call to get the team roster
-  url <- paste0("https://fantasysports.yahooapis.com/fantasy/v2/team/", leagueID, ".t.", team_number, "/roster?format=json")
-  roster_list <- content(GET(url, user_agent(userAgent),
-                     add_headers(Authorization = paste0("Bearer ", token$access_token))))
+# Extract the rosters for each team ------------------------------------------
+
+fantasy_teams <- map_dfr(1:length(team_rosters), function(team_number) {
+  roster_list <- team_rosters[[team_number]]
   
   # Skip if team is empty
   if(length(roster_list$fantasy_content) == 0) {
-    print(paste(team_number, " failed"))
-    next
+    warning(team_number, " failed")
+    return(NULL)
   }
   
-  roster <- data_frame(
+  # This is the ugliest thing in the world
+  # But it works so I'm sticking with it for now
+  roster <- tibble(
     player_key = unlist(map_if(roster_list$fantasy_content$team[[2]]$roster[[4]]$players, is.list, ~ .$player[[1]][[1]]$player_key)),
     player_id = unlist(map_if(roster_list$fantasy_content$team[[2]]$roster[[4]]$players, is.list, ~ .$player[[1]][[2]]$player_id)),
     name = unlist(map_if(roster_list$fantasy_content$team[[2]]$roster[[4]]$players, is.list, ~ .$player[[1]][[3]]$name$full)),
     fantasy_team = team_number,
-    team_name = team_rosters[[1]]$fantasy_content$team[[1]][[3]][[1]]) %>%
-
-    # Remove the last row of the df (its junk)
-    head(-1) %>% 
-    
-    # Transliterate the names so accents don't mess up your merges
-    mutate(name = iconv(as.character(name), from="UTF-8", to="ASCII//TRANSLIT"))
+    team_name = team_rosters[[team_number]]$fantasy_content$team[[1]][[3]][[1]]) %>%
+    head(-1) %>% # Remove the last row of the df (its junk)
+    # Transliterate the names so accents don't mess up your joins
+    mutate(name = iconv(as.character(name), from="UTF-8", to="ASCII//TRANSLIT")) 
   
   message("Team: ", team_number, " // Length: ", nrow(roster))
   
-  if(nrow(roster) == 0) next # Skip if the team doesn't exist
-  
-  fantasy_teams <- bind_rows(fantasy_teams, roster)
+  if(nrow(roster) == 0) {
+    return(NULL) # Skip if the team doesn't exist
+  } else {
+    return(roster)
+  }
+})
 
-}
+# Write the data to some CSVs ---------------------------------------------
+write_csv(fantasy_teams, "data/DFL-rosters.csv")
 
-# Save the rosters as CSVs
-path <- paste0("data/DFL_rosters_2019.csv")
-write_csv(fantasy_teams, path)
+# Join the USA Today salaries and save that separately
+salaries <- read_csv("data/usatoday_salary.csv") %>% 
+  select(-aav)
+
+teams_with_salary <- fantasy_teams %>%
+  mutate(year = year) %>% 
+  left_join(salaries, by = c("name", "year")) %>%
+  mutate(salary = ifelse(is.na(salary), league_minimum, salary)) # League minimum is $550,000
+
+write_csv(teams_with_salary, "data/DFL-rosters_USA-Today-salaries.csv")
+            
