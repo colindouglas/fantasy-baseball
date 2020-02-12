@@ -107,6 +107,10 @@ fantasy_teams <- map_dfr(1:length(team_rosters), function(team_number) {
   }
 })
 
+# Fix cases where the players name is "Joe Smith (Pitcher)"
+fantasy_teams <- fantasy_teams %>%
+  mutate(name = unlist(str_split(name, pattern = "\\(", n = 1)))
+
 # Write the data to some CSVs ---------------------------------------------
 write_csv(fantasy_teams, "data/DFL-rosters.csv")
 

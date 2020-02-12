@@ -11,162 +11,98 @@ get_picks <- function(position, teams, slots) {
 # Constants ---------------------------------------------------------------
 
 league_min <- 555000
-salary_cap <- 66553041.75 # Not updated for 2020
+salary_cap <- 68853720 # Not updated for 2020
 team_count <- 12
 roster_size <- 30
 salary_year <- 2019
 
-# First number is team #, index position is order
-draft_order <- order(c(2, 3, 12, 6, 5, 4, 8, 7, 9, 10, 1, 11)) 
+# Last place team is draft_order[1], first place team is draft_order[n]
+draft_order <- c(2, 3, 4, 7, 6, 12, 8, 9, 11, 1, 10)
 
+# Project player values ---------------------------------------------------
+source("project-player-value.R")
+player_values <- weightedProj %>%
+  mutate(name = iconv(as.character(Name), from = "UTF-8", to = "ASCII//TRANSLIT")) %>%
+  ungroup() %>%
+  select(name, WAR = weightedWAR)
 
 # Read in Data ------------------------------------------------------------
+player_teams <- read_csv("data/DFL-rosters.csv")
+player_salaries <- read_csv("data/usatoday_salary.csv")
 
-### Import the USA Today Salary data set 
-salary_data <- read_csv("data/usatoday_salary.csv") %>%
-  mutate(salary = as.numeric(gsub("[$,.]", "", salary))) %>%
-  filter(year == salary_year)  %>%
-  select(-aav) %>%
-  
-  ### Remove periods from names
-  mutate(name = gsub("\\.","", name)) %>%
-  
-  ### Remove accents from names
-  mutate(name = iconv(as.character(name), from="UTF-8", to="ASCII//TRANSLIT"))
-  
-# Run the player projection script
-source("project-player-value.R")
-steamer_proj <- weightedProj %>%
-  rename(WAR = weightedWAR)
+players <- full_join(player_teams, player_salaries, by = 'name') %>%
+  full_join(player_values, by = 'name') %>%
+  filter(WAR > 0) %>%
+  mutate(salary = ifelse(is.na(salary), league_min, salary))
 
+team_names <- players %>%
+  distinct(fantasy_team, team_name)
 
-# First pass of keeper optimization ---------------------------------------
+# Do first round of knapsacking -------------------------------------------
 
-# Init the data frame
-keepers_max <- tibble()
-
-for (i in 1:team_count) {
-  
-  ### Read in the rosters of a fantasy team
-  keeper_roster <- read_csv("data/DFL_rosters.csv") %>%
-    filter(fantasy_team == i) %>%
-    
-    ### Clean up the names
-    mutate(name = gsub("\\.","", name)) %>%
-    mutate(name = iconv(as.character(name), from="UTF-8", to="ASCII//TRANSLIT"))
-  
-  ### Merge the keeper data with their steamer projection and 2017 salary
-  merged_keeper <- left_join(keeper_roster, steamer_proj, by = c("name" = "Name")) %>%
-    left_join(salary_data, by = c("name" = "name"))  %>%
-    
-    ### If there's no salary data, use the league minimum, working in units of $100,000 
-    mutate(salary = case_when(
-      is.na(salary)  ~ league_min, # / 10^5, 
-      !is.na(salary) ~ salary)) %>% # / 10^5)) %>%
-    
-    ### If there's no WAR projection, assume they're replacement level
-    mutate(WAR = case_when(
-      is.na(WAR)  ~ 0,
-      !is.na(WAR) ~ WAR))
-  
-  ### Use the adagio implimentation of the knapsack problem solution to find optimal keepers
-  keepers <- mknapsack::knapsack(volume = merged_keeper$salary, 
-                                 profit = merged_keeper$WAR, 
-                                 cap = salary_cap) # Satisfy salary cap
-  
-  ### Make a data frame of just the players to keep
-  best_roster <- merged_keeper[as.logical(keepers), ]
-  
-  ### Add it to the overall dataframe
-  keepers_max <- bind_rows(keepers_max, best_roster)
-  rm(keeper_roster, merged_keeper, best_roster)
-}
-
-### Make a summary dataframe for each team
-team_summary <- keepers_max %>%
+players <- players %>% 
+  select(-team_name) %>%
   group_by(fantasy_team) %>%
-  summarize(keepers = n(), WAR = sum(WAR), salary = sum(salary)) %>%
-  mutate(picks = roster_size - keepers)
+  mutate(knapsack = as.logical(
+    mknapsack::knapsack(volume = salary, 
+                        profit = WAR, 
+                        cap = salary_cap)) & !is.na(fantasy_team))
 
-### Write the data to CSVs
-write_csv(keepers_max, "data/DFL_keepers_max.csv")
+# Find the available players ----------------------------------------------
 
-# Attempt to value draft slots --------------------------------------------
+draft_values <- players %>% 
+  ungroup() %>%
+  filter(!knapsack) %>%
+  arrange(-WAR, salary, name) %>%
+  mutate(draft_pick = row_number()) %>%
+  select(name, draft_pick, WAR) %>%
+  mutate(fantasy_team = rep_len(draft_order, length.out = n()),
+         salary = 0)
 
-player_stats <- steamer_proj %>%
-  left_join(salary_data, by = c("Name" = "name")) %>%
-  mutate(salary = case_when(
-    is.na(salary)  ~ league_min,
-    !is.na(salary) ~ salary)) %>%
-  mutate(WAR = case_when(
-    is.na(WAR)  ~ 0,
-    !is.na(WAR) ~ WAR))
 
-keepers_current <- keepers_max
-teams_trimmed <- 1
+# Try to guess who would get drafted by who -------------------------------
 
-### Here is where the while loop needs to start
-while (teams_trimmed > 0) {
-  ### Find the draftable players based on keeper optimization
-  draftable_players <- player_stats %>%
-    anti_join(keepers_current, by = c("Name" = "name")) %>%
-    arrange(desc(WAR))
-  
-  ### Try to predict the WAR value of each draft slot. Wiggle is the width of the rolling average
-
-  draft_wiggle <- 3
-  slot_values <- draftable_players %>%
-    mutate(pick = rank(-WAR, ties = "first"), 
-           est_WAR = WAR) %>%
-    select(pick, WAR, est_WAR)
-  slot_values$pick <- 1:nrow(slot_values)
-  
-  keepers_adj <- data_frame()
-  
-  ### Do this better: Stepwise, remove one pick at a time, throw it back into the pool.
-  teams_trimmed <- 0
-  for (i in 1:team_count) {
-    team_number <- i
-    ### Load the list of keepers from the last iteraton
-    keepers_team <- keepers_current %>%
-      filter(fantasy_team == team_number)
-    
-    ### Find out how many picks the team has
-    number_picks <- roster_size - nrow(keepers_team)
-    
-    ### Estimate the position of their last pick (very rough)
-    last_pick <- max(get_picks(draft_order[i], team_count, number_picks))
-    
-    ### Estimate the value of their last pick (very rough)
-    last_pick_value <- slot_values %>%
-      filter(pick == last_pick) %>%
-      pull(est_WAR)
-    
-    ### If the value of their last pick is more than one of their keepers, drop the least valuable keeper
-    if (last_pick_value > min(keepers_team$WAR)) {
-      keepers_team <- keepers_team %>%
-        arrange(desc(WAR)) %>%
-        head(-1) 
-      teams_trimmed <- teams_trimmed + 1
-    } else {
-      keepers_team <- keepers_team %>%
-        arrange(desc(WAR))
-    }
-    keepers_adj <- bind_rows(keepers_adj, keepers_team)
-    
-  }
-  keepers_current <- keepers_adj
-}
-
-### Make a summary table with revisions
-team_summary <- keepers_max %>%
+teams_with_picks <- players %>%
+  bind_rows(draft_values) %>%
   group_by(fantasy_team) %>%
-  summarize(keepers_max = n(), WAR_max = sum(WAR), salary_max = sum(salary)) %>%
-  full_join(keepers_adj %>% 
-              group_by(fantasy_team) %>%
-              summarize(keepers_adj = n(), WAR_adj = sum(WAR), salary_adj = sum(salary)), 
-            by = "fantasy_team"
-  )
+  top_n(30, WAR) %>% 
+  arrange(fantasy_team)
 
-write_csv(keepers_adj, "data/DFL_keepers_opt.csv")
-write_csv(team_summary, "data/DFL_keepers_summary.csv")
+
+# Knapsack it again with draft pick guesses -------------------------------
+
+players_round2 <- teams_with_picks %>% 
+  group_by(fantasy_team) %>%
+  mutate(knapsack2 = as.logical(
+    mknapsack::knapsack(volume = salary, 
+                        profit = WAR, 
+                        cap = salary_cap)))
+
+
+
+# Figure out keepers after second round -----------------------------------
+keepers <- players_round2 %>%
+  filter(is.na(draft_pick), knapsack2) %>%
+  left_join(team_names, by = "fantasy_team")
+
+keepers_summary <- keepers %>%
+  group_by(team_name, fantasy_team) %>%
+  summarize(keepers = n(), total_salary = sum(salary)) %>%
+  filter(!is.na(fantasy_team))
+
+
+
+# Write a pretty Excel worksheet via openxlsx ---------------------------------
+
+tabs <- split(keepers, keepers$team_name)
+tabs <- purrr::prepend(tabs, list(keepers_summary))
+names(tabs)[1] <- "Summary"
+
+xlsx_out <- openxlsx::createWorkbook()
+
+walk2(tabs, names(tabs), function(data, name) {
+  openxlsx::addWorksheet(xlsx_out, name)
+  openxlsx::writeData(xlsx_out , name, data)
+})
+
+openxlsx::saveWorkbook(xlsx_out, file = 'data/keepers.xlsx', overwrite = TRUE)
