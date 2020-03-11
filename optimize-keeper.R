@@ -2,7 +2,7 @@ library(tidyverse)
 
 # Constants ---------------------------------------------------------------
 league_min <- 555000
-salary_cap <- 68853720 # Not updated for 2020
+salary_cap <- 68853720 # 2019 median for 2020
 team_count <- 12
 roster_size <- 30
 salary_year <- 2019
@@ -36,7 +36,9 @@ players <- players %>%
   mutate(knapsack = as.logical(
     mknapsack::knapsack(volume = salary, 
                         profit = WAR, 
-                        cap = salary_cap)) & !is.na(fantasy_team))
+                        cap = salary_cap)),
+    kept = knapsack & !is.na(fantasy_team))
+
 
 # Find the available players ----------------------------------------------
 draft_values <- players %>% 
@@ -46,13 +48,13 @@ draft_values <- players %>%
   mutate(draft_pick = row_number()) %>%
   select(name, draft_pick, WAR) %>%
   mutate(fantasy_team = rep_len(draft_order, length.out = n()),
-         salary = 0)
+         salary = 0) # Draft picks are free
 
 # Try to guess who would get drafted by who -------------------------------
 teams_with_picks <- players %>%
   bind_rows(draft_values) %>%
   group_by(fantasy_team) %>%
-  top_n(30, WAR) %>% 
+  top_n(roster_size, WAR) %>% 
   arrange(fantasy_team)
 
 # Knapsack it again with draft pick guesses -------------------------------
@@ -61,7 +63,7 @@ players_round2 <- teams_with_picks %>%
   mutate(knapsack2 = as.logical(
     mknapsack::knapsack(volume = salary, 
                         profit = WAR, 
-                        cap = salary_cap)))
+                        cap = salary_cap)) & !is.na(fantasy_team))
 
 # Figure out keepers after second round -----------------------------------
 keepers <- players_round2 %>%
